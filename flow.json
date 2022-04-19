@@ -2,7 +2,15 @@
     {
         "id": "b774e57a4fb492e4",
         "type": "tab",
-        "label": "Flow 1",
+        "label": "pulling data",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c8e0e2f5aadf6a32",
+        "type": "tab",
+        "label": "to database",
         "disabled": false,
         "info": "",
         "env": []
@@ -37,7 +45,7 @@
         "id": "595a56723661ca0a",
         "type": "mqtt-broker",
         "name": "mqtt broker",
-        "broker": "mqtt",
+        "broker": "localhost",
         "port": "1883",
         "clientid": "",
         "autoConnect": true,
@@ -58,6 +66,20 @@
         "willPayload": "",
         "willMsg": {},
         "sessionExpiry": ""
+    },
+    {
+        "id": "74450c7dc8a8e304",
+        "type": "influxdb",
+        "hostname": "localhost",
+        "port": "8086",
+        "protocol": "http",
+        "database": "balena",
+        "name": "influxdb",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "1.x",
+        "url": "http://localhost:8086",
+        "rejectUnauthorized": true
     },
     {
         "id": "94b3baf363f6e23d",
@@ -114,9 +136,10 @@
         "finalize": "",
         "libs": [],
         "x": 450,
-        "y": 120,
+        "y": 140,
         "wires": [
             [
+                "5ba1b04796156b11",
                 "1b86991445bffef2"
             ]
         ]
@@ -126,19 +149,18 @@
         "type": "rbe",
         "z": "b774e57a4fb492e4",
         "name": "",
-        "func": "rbe",
+        "func": "rbei",
         "gap": "",
         "start": "",
         "inout": "out",
         "septopics": true,
         "property": "payload",
         "topi": "topic",
-        "x": 630,
-        "y": 120,
+        "x": 690,
+        "y": 140,
         "wires": [
             [
-                "b4a9288243d6ecca",
-                "5ba1b04796156b11"
+                "b4a9288243d6ecca"
             ]
         ]
     },
@@ -156,8 +178,8 @@
         "correl": "",
         "expiry": "",
         "broker": "595a56723661ca0a",
-        "x": 810,
-        "y": 120,
+        "x": 850,
+        "y": 140,
         "wires": []
     },
     {
@@ -174,6 +196,103 @@
         "statusVal": "payload",
         "statusType": "auto",
         "x": 790,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "9c9a7cfd6136bc6d",
+        "type": "mqtt in",
+        "z": "b774e57a4fb492e4",
+        "name": "",
+        "topic": "ic60n/status",
+        "qos": "0",
+        "datatype": "utf8",
+        "broker": "595a56723661ca0a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 230,
+        "y": 60,
+        "wires": [
+            [
+                "5ba1b04796156b11"
+            ]
+        ]
+    },
+    {
+        "id": "ff18046dd96a1b65",
+        "type": "mqtt in",
+        "z": "c8e0e2f5aadf6a32",
+        "name": "",
+        "topic": "ic60n/status",
+        "qos": "0",
+        "datatype": "utf8",
+        "broker": "595a56723661ca0a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 120,
+        "wires": [
+            [
+                "cda6c045bf726379"
+            ]
+        ]
+    },
+    {
+        "id": "46f832cbc7f05a5a",
+        "type": "influxdb out",
+        "z": "c8e0e2f5aadf6a32",
+        "influxdb": "74450c7dc8a8e304",
+        "name": "influxdb",
+        "measurement": "status",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 700,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "cda6c045bf726379",
+        "type": "function",
+        "z": "c8e0e2f5aadf6a32",
+        "name": "",
+        "func": "if (msg.payload === \"closed\") {\n    msg.payload = 1;\n} else {\n    msg.payload = 0;\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 120,
+        "wires": [
+            [
+                "46f832cbc7f05a5a",
+                "81cbd2e0d379eec0"
+            ]
+        ]
+    },
+    {
+        "id": "81cbd2e0d379eec0",
+        "type": "debug",
+        "z": "c8e0e2f5aadf6a32",
+        "name": "",
+        "active": true,
+        "tosidebar": false,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 650,
         "y": 60,
         "wires": []
     }
