@@ -1,1 +1,180 @@
-[]
+[
+    {
+        "id": "b774e57a4fb492e4",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c6ce54b4a820f0a6",
+        "type": "modbus-client",
+        "name": "Acti9",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": false,
+        "tcpHost": "10.46.1.10",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "255",
+        "commandDelay": "1",
+        "clientTimeout": "1000",
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": false
+    },
+    {
+        "id": "595a56723661ca0a",
+        "type": "mqtt-broker",
+        "name": "mqtt broker",
+        "broker": "mqtt",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "94b3baf363f6e23d",
+        "type": "modbus-read",
+        "z": "b774e57a4fb492e4",
+        "name": "iC60N",
+        "topic": "",
+        "showStatusActivities": false,
+        "logIOActivities": false,
+        "showErrors": false,
+        "unitid": "",
+        "dataType": "HoldingRegister",
+        "adr": "14200",
+        "quantity": "1",
+        "rate": "5",
+        "rateUnit": "s",
+        "delayOnStart": true,
+        "startDelayTime": "1",
+        "server": "c6ce54b4a820f0a6",
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": false,
+        "x": 210,
+        "y": 180,
+        "wires": [
+            [
+                "972a05a931412d5c"
+            ],
+            [
+                "c4c0404c68030b17"
+            ]
+        ]
+    },
+    {
+        "id": "c4c0404c68030b17",
+        "type": "modbus-response",
+        "z": "b774e57a4fb492e4",
+        "name": "",
+        "registerShowMax": 20,
+        "x": 450,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "972a05a931412d5c",
+        "type": "function",
+        "z": "b774e57a4fb492e4",
+        "name": "protocol translation",
+        "func": "if (msg.payload[0] === 3) {\n    msg.payload = \"closed\";\n} else {\n    msg.payload = \"open\";\n}\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 120,
+        "wires": [
+            [
+                "1b86991445bffef2"
+            ]
+        ]
+    },
+    {
+        "id": "1b86991445bffef2",
+        "type": "rbe",
+        "z": "b774e57a4fb492e4",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 630,
+        "y": 120,
+        "wires": [
+            [
+                "b4a9288243d6ecca",
+                "5ba1b04796156b11"
+            ]
+        ]
+    },
+    {
+        "id": "b4a9288243d6ecca",
+        "type": "mqtt out",
+        "z": "b774e57a4fb492e4",
+        "name": "mqtt broker",
+        "topic": "ic60n/status",
+        "qos": "0",
+        "retain": "true",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "595a56723661ca0a",
+        "x": 810,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "5ba1b04796156b11",
+        "type": "debug",
+        "z": "b774e57a4fb492e4",
+        "name": "mqtt",
+        "active": true,
+        "tosidebar": false,
+        "console": false,
+        "tostatus": true,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "payload",
+        "statusType": "auto",
+        "x": 790,
+        "y": 60,
+        "wires": []
+    }
+]
